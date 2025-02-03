@@ -11,9 +11,7 @@ export class Family100Game {
     return questions[randomIndex];
   }
 
-  public startGame(msg: Message): string {
-    const chatId = msg.from;
-
+  public startGame(chatId: string): string {
     if (this.sessions.has(chatId)) {
       return "⚠️ Permainan sedang berlangsung di grup ini!";
     }
@@ -41,9 +39,8 @@ export class Family100Game {
     return `🎮 *FAMILY 100* 🎮\n\n*Pertanyaan:*\n${questionData.question}\n\n${blankAnswers}\n\nKetik jawaban kalian langsung!\nKetik *.nyerah* untuk menyerah.`;
   }
 
-  public async processAnswer(msg: Message): Promise<string | null> {
+  public async processAnswer(msg: Message, chatId: string): Promise<string | null> {
     console.log("Processing answer:", msg.body);
-    const chatId = msg.from;
     const session = this.sessions.get(chatId);
 
     if (!session?.isActive) {
@@ -159,4 +156,4 @@ export class Family100Game {
 
     return message;
   }
-}
+          }
