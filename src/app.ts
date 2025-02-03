@@ -39,7 +39,10 @@ client.on("ready", () => {
 
 const family100Game = new Family100Game();
 
-client.on("message", async (msg) => {
+client.on("message", async (msg: Message) => {
+  const chat = await msg.getChat();
+  const chatId = chat.id._serialized;
+
   if (msg.body === ".menu") {
     const contact = await msg.getContact();
     const nameOrNumber = contact.pushname || contact.number;
@@ -62,7 +65,7 @@ Daftar Kategori Menu:
       msg.body.startsWith(".sticker") ||
       msg.body.startsWith("!sticker") ||
       msg.body === ".s") &&
-    msg.type === "image"
+    msg.hasMedia
   ) {
     let media;
     try {
@@ -72,7 +75,7 @@ Daftar Kategori Menu:
       return msg.reply("Proses mengunduh gambar gagal!");
     }
 
-    client.sendMessage(msg.from, media, {
+    client.sendMessage(chatId, media, {
       sendMediaAsSticker: true,
       stickerAuthor: "Abdul",
       stickerName: "🤨🤨",
@@ -104,15 +107,15 @@ _Game lainnya akan segera hadir! Stay tuned_ 🎯`;
   }
 
   if (msg.body === ".f100") {
-    const response = family100Game.startGame(msg);
-    await client.sendMessage(msg.from, response);
+    const response = family100Game.startGame(chatId);
+    await client.sendMessage(chatId, response);
     return;
   }
 
   // Proses jawaban Family 100
-  const answerResponse = await family100Game.processAnswer(msg);
+  const answerResponse = await family100Game.processAnswer(msg, chatId);
   if (answerResponse) {
-    await client.sendMessage(msg.from, answerResponse);
+    await client.sendMessage(chatId, answerResponse);
   }
 
   // Tambahkan handler untuk chat dengan AI
@@ -121,7 +124,7 @@ _Game lainnya akan segera hadir! Stay tuned_ 🎯`;
     if (question) {
       const response = await chatWithGemini(question);
       if (response) {
-        await client.sendMessage(msg.from, response);
+        await client.sendMessage(chatId, response);
       } else {
         await msg.reply(
           "Maaf, saya tidak dapat memproses pertanyaan Anda saat ini."
