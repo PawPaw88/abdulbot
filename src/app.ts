@@ -24,7 +24,9 @@ const client = new Client({
       "--max-old-space-size=4096",
     ],
   },
-  authStrategy: new LocalAuth(),
+  authStrategy: new LocalAuth({
+    dataPath: process.env.RAILWAY_ENV ? "/app/auth" : "./auth",
+  }),
 });
 
 client.on("qr", (qr) => {
